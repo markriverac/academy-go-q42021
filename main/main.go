@@ -14,7 +14,7 @@ import (
 var PokemonList []pokemon.Pokemon
 
 func homePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Welcome to the HomePage!")
+	fmt.Fprintf(w, "Welcome to the World of Pokemon!")
 	fmt.Println("Endpoint Hit: homePage")
 }
 
