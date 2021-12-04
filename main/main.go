@@ -50,7 +50,7 @@ func handleRequests() {
 }
 
 func main() {
-	pokemonList := pokemon.GetManyPokemon(150)
+	pokemonList := pokemon.GetManyPokemon(-1)
 	utils.WritePokemonToCsv(pokemonList)
 	records := utils.ReadCsvFile("pokemon.csv")
 	PokemonList = pokemon.ParseToPokemon(records)

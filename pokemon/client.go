@@ -12,7 +12,7 @@ import (
 
 const POKEMON_API = "http://pokeapi.co/api/v2/"
 
-func pokemonClient(endpoint string) string {
+func PokemonClient(endpoint string) string {
 	response, err := http.Get(POKEMON_API + endpoint)
 
 	if err != nil {
@@ -28,7 +28,7 @@ func pokemonClient(endpoint string) string {
 }
 
 func GetManyPokemon(many int) []Pokemon {
-	pokemonResponse := pokemonClient("pokemon?limit=" + strconv.Itoa(many))
+	pokemonResponse := PokemonClient("pokemon?limit=" + strconv.Itoa(many))
 	var pokemonListResponse PokemonResponse
 	json.Unmarshal([]byte(pokemonResponse), &pokemonListResponse)
 	return pokemonListResponse.Results
