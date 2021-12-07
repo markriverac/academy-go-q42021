@@ -3,7 +3,10 @@ package utils
 import (
 	"encoding/csv"
 	"fmt"
+	"log"
 	"os"
+
+	"github.com/academy/academy-go-q42021/pokemon"
 )
 
 func ReadCsvFile(filePath string) [][]string {
@@ -20,4 +23,22 @@ func ReadCsvFile(filePath string) [][]string {
 	}
 
 	return records
+}
+
+func WritePokemonToCsv(pokemonList []pokemon.Pokemon) {
+	csvFile, err := os.Create("pokemon.csv")
+
+	if err != nil {
+		log.Fatalf("failed creating file: %s", err)
+	}
+
+	csvwriter := csv.NewWriter(csvFile)
+	_ = csvwriter.Write([]string{"Name", "url"})
+	for _, empRow := range pokemonList {
+		pokemonData := []string{empRow.Name, empRow.Url}
+		_ = csvwriter.Write(pokemonData)
+	}
+
+	csvwriter.Flush()
+	csvFile.Close()
 }

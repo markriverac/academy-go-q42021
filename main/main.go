@@ -26,11 +26,11 @@ func returnAllPokemon(w http.ResponseWriter, r *http.Request) {
 
 func returnSinglePokemon(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	key := vars["id"]
+	key := vars["name"]
 	exists := false
 
 	for _, pokemon := range PokemonList {
-		if pokemon.Id == key {
+		if pokemon.Name == key {
 			exists = true
 			json.NewEncoder(w).Encode(pokemon)
 		}
@@ -45,12 +45,14 @@ func handleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/", homePage)
 	myRouter.HandleFunc("/pokemon", returnAllPokemon)
-	myRouter.HandleFunc("/pokemon/{id}", returnSinglePokemon)
+	myRouter.HandleFunc("/pokemon/{name}", returnSinglePokemon)
 	log.Fatal(http.ListenAndServe(":10000", myRouter))
 }
 
 func main() {
-	records := utils.ReadCsvFile("../pokemon/pokemon.csv")
+	pokemonList := pokemon.GetManyPokemon(-1)
+	utils.WritePokemonToCsv(pokemonList)
+	records := utils.ReadCsvFile("pokemon.csv")
 	PokemonList = pokemon.ParseToPokemon(records)
 	handleRequests()
 }
