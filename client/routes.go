@@ -46,45 +46,46 @@ func ReturnSinglePokemon(w http.ResponseWriter, r *http.Request) {
 func ConcurrencyPokemon(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	qType := vars["type"]
-	qItems, err := strconv.Atoi(vars["items"])
-	qWorkerItems, err := strconv.Atoi(vars["items_per_worker"])
+	qItems, itemsErr := strconv.Atoi(vars["items"])
+	qWorkerItems, iWorkerErr := strconv.Atoi(vars["items_per_worker"])
 	var concPokemonList []pokemon.Pokemon
 
-	if err != nil {
+	if itemsErr != nil || iWorkerErr != nil || !utils.IsValidKey(qType, []string{"even", "odd"}) {
 		fmt.Fprintf(w, "Please check your queries. Type must be 'odd' or 'even', items and items_per_worker must be numbers")
-	}
+	} else {
 
-	workers := qItems / qWorkerItems
+		workers := qItems / qWorkerItems
 
-	items := make(chan pokemon.Pokemon, qItems)
-	cPokemon := make(chan pokemon.Pokemon, qItems)
+		items := make(chan pokemon.Pokemon, qItems)
+		cPokemon := make(chan pokemon.Pokemon, qItems)
 
-	var wg sync.WaitGroup
+		var wg sync.WaitGroup
 
-	for w := 0; w < workers; w++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			worker(qType, items, cPokemon)
-		}()
-	}
-
-	for j := 1; j <= qItems; j++ {
-		if j > (len(PokemonList) - 1) {
-			fmt.Fprintf(w, "You are asking for too many pokemon. Wait for the next generation, maybe we can get that many then. In the meanwhile, here you have as many as we can give :D \n")
-			break
+		for w := 0; w < workers; w++ {
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				worker(qType, items, cPokemon)
+			}()
 		}
-		items <- PokemonList[j]
-	}
 
-	close(items)
-	wg.Wait()
-	close(cPokemon)
+		for j := 1; j <= qItems; j++ {
+			if j > (len(PokemonList) - 1) {
+				fmt.Fprintf(w, "You are asking for too many pokemon. Wait for the next generation, maybe we can get that many then. In the meanwhile, here you have as many as we can give :D \n")
+				break
+			}
+			items <- PokemonList[j]
+		}
 
-	for pokemon := range cPokemon {
-		concPokemonList = append(concPokemonList, pokemon)
+		close(items)
+		wg.Wait()
+		close(cPokemon)
+
+		for pokemon := range cPokemon {
+			concPokemonList = append(concPokemonList, pokemon)
+		}
+		json.NewEncoder(w).Encode(concPokemonList)
 	}
-	json.NewEncoder(w).Encode(concPokemonList)
 }
 
 func worker(qType string, pokemonList <-chan pokemon.Pokemon, results chan<- pokemon.Pokemon) {

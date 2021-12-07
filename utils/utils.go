@@ -47,3 +47,12 @@ func WritePokemonToCsv(pokemonList []pokemon.Pokemon) {
 func IsEven(id int) bool {
 	return id%2 == 0
 }
+
+func IsValidKey(key string, validKeys []string) bool {
+	for _, validKey := range validKeys {
+		if key == validKey {
+			return true
+		}
+	}
+	return false
+}
