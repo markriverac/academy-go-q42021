@@ -1,6 +1,7 @@
 package pokemon
 
 type Pokemon struct {
+	Id   string `json:"Id"`
 	Name string `json:"Name"`
 	Url  string `json:"Url"`
 }
@@ -16,8 +17,9 @@ func ParseToPokemon(pokemonLines [][]string) []Pokemon {
 	var pokemonList []Pokemon
 	for _, line := range pokemonLines {
 		newPokemon := Pokemon{
-			Name: line[0],
-			Url:  line[1],
+			Id:   line[0],
+			Name: line[1],
+			Url:  line[2],
 		}
 		pokemonList = append(pokemonList, newPokemon)
 	}

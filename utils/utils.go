@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/academy/academy-go-q42021/pokemon"
 )
@@ -33,12 +34,25 @@ func WritePokemonToCsv(pokemonList []pokemon.Pokemon) {
 	}
 
 	csvwriter := csv.NewWriter(csvFile)
-	_ = csvwriter.Write([]string{"Name", "url"})
-	for _, empRow := range pokemonList {
-		pokemonData := []string{empRow.Name, empRow.Url}
+	_ = csvwriter.Write([]string{"id", "Name", "url"})
+	for index, empRow := range pokemonList {
+		pokemonData := []string{strconv.Itoa(index + 1), empRow.Name, empRow.Url}
 		_ = csvwriter.Write(pokemonData)
 	}
 
 	csvwriter.Flush()
 	csvFile.Close()
+}
+
+func IsEven(id int) bool {
+	return id%2 == 0
+}
+
+func IsValidKey(key string, validKeys []string) bool {
+	for _, validKey := range validKeys {
+		if key == validKey {
+			return true
+		}
+	}
+	return false
 }
